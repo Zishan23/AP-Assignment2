@@ -14,11 +14,12 @@ class LoginUI {
         TextField usernameField = new TextField();
         PasswordField passwordField = new PasswordField();
         Button loginButton = new Button("Login");
+        Button registerButton = new Button("Register");
         Label errorLabel = new Label("");
 
         // Layout
         VBox layout = new VBox(10);
-        layout.getChildren().addAll(new Label("Login"), usernameField, passwordField, loginButton, errorLabel);
+        layout.getChildren().addAll(new Label("Login"), usernameField, passwordField, loginButton, registerButton, errorLabel);
 
         // Set up the scene
         Scene scene = new Scene(layout, 400, 300);
@@ -37,6 +38,11 @@ class LoginUI {
             } else {
                 errorLabel.setText("Login failed. Please try again.");
             }
+        });
+
+        // Event handler for the register button
+        registerButton.setOnAction(event -> {
+            RegistrationUI.displayRegistrationUI(primaryStage);
         });
     }
 }
