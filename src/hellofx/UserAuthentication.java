@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserAuthentication {
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/JBDC";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/JDBC";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "Zishan@2320";
 
