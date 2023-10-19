@@ -11,7 +11,12 @@ public class UserRegistration {
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "Zishan@2320";
 
-    public static boolean registerUser(String firstName, String lastName, String username, String password) {
+    public static boolean registerUser(User user) {
+        String firstName = user.getFirstName();
+        String lastName = user.getLastName();
+        String username = user.getUsername();
+        String password = user.getPassword();
+
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
             // Check if the username is already in use
             if (isUsernameTaken(conn, username)) {

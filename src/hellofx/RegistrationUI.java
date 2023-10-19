@@ -44,10 +44,14 @@ class RegistrationUI {
 
             // Validate and save user data to the database
             if (isValidInput(firstName, lastName, username, password)) {
-                boolean registrationSuccessful = UserRegistration.registerUser(firstName, lastName, username, password);
+                // Create a User object for the registered user
+                User registeredUser = new User(0, firstName, lastName, username, password);
+
+                boolean registrationSuccessful = UserRegistration.registerUser(registeredUser);
 
                 if (registrationSuccessful) {
-                    UserDashboard.displayUserDashboard(primaryStage, username);
+                    // Pass the registered user object to the UserDashboard
+                    UserDashboard.displayUserDashboard(primaryStage, registeredUser);
                 } else {
                     errorLabel.setText("Registration failed. Please try again.");
                 }

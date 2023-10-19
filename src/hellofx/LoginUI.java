@@ -28,7 +28,7 @@ class LoginUI {
 
         // Event handler for the login button
         loginButton.setOnAction(event -> {
-            String username = usernameField.getText();
+            User username = usernameField.getText();
             String password = passwordField.getText();
 
             boolean loginSuccessful = UserAuthentication.login(username, password);
