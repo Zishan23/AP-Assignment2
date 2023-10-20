@@ -42,16 +42,16 @@ class RegistrationUI {
             String username = usernameField.getText();
             String password = passwordField.getText();
 
-            // Validate and save user data to the database
+            
             if (isValidInput(firstName, lastName, username, password)) {
-                // Create a User object for the registered user
+               
                 User registeredUser = new User(0, firstName, lastName, username, password);
 
                 boolean registrationSuccessful = UserRegistration.registerUser(firstName, lastName, username, password);
 
 
                 if (registrationSuccessful) {
-                    // Pass the registered user object to the UserDashboard
+                    
                     CombinedDashboard.displayUserDashboard(primaryStage, registeredUser);
                 } else {
                     errorLabel.setText("Registration failed. Please try again.");
@@ -63,7 +63,7 @@ class RegistrationUI {
     }
 
     private static boolean isValidInput(String firstName, String lastName, String username, String password) {
-        // Add validation logic here (e.g., checking for empty fields, valid username, strong password, etc.)
+      
         return !firstName.isEmpty() && !lastName.isEmpty() && !username.isEmpty() && !password.isEmpty();
     }
 }

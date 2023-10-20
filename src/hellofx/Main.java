@@ -6,7 +6,7 @@ import javafx.stage.Stage;
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Create an instance of LoginUI and then call the non-static method
+        
         LoginUI loginUI = new LoginUI();
         loginUI.displayLoginUI(primaryStage);
     }

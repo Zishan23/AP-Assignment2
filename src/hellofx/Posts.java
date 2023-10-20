@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Posts {
-    private List<Post> posts; // A list to hold Post objects
+    private List<Post> posts; 
 
     public Posts() {
-        this.posts = new ArrayList<>(); // Initialize an empty list of posts
+        this.posts = new ArrayList<>(); 
     }
 
     // Getters and setters for post attributes
