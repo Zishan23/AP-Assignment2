@@ -1,6 +1,6 @@
 package hellofx;
 
-import javafx.application.Application;
+
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
@@ -47,11 +47,12 @@ class RegistrationUI {
                 // Create a User object for the registered user
                 User registeredUser = new User(0, firstName, lastName, username, password);
 
-                boolean registrationSuccessful = UserRegistration.registerUser(registeredUser);
+                boolean registrationSuccessful = UserRegistration.registerUser(firstName, lastName, username, password);
+
 
                 if (registrationSuccessful) {
                     // Pass the registered user object to the UserDashboard
-                    UserDashboard.displayUserDashboard(primaryStage, registeredUser);
+                    CombinedDashboard.displayUserDashboard(primaryStage, registeredUser);
                 } else {
                     errorLabel.setText("Registration failed. Please try again.");
                 }

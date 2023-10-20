@@ -8,10 +8,12 @@ import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import java.io.File;
+import javafx.animation.PauseTransition;
+
 
 public class CombinedDashboard extends Application {
     private static User currentUser; // Assuming you have a User class
-
+    private String folderPath;
     public static void main(String[] args) {
         launch(args);
     }
@@ -52,53 +54,65 @@ public class CombinedDashboard extends Application {
         // Event handlers for the buttons
         logoutButton.setOnAction(event -> {
             // Implement logout functionality here
-            LoginUI.displayLoginUI(primaryStage);
+            LoginUI loginUI = new LoginUI(); // Create an instance of the inner class
+            loginUI.displayLoginUI(primaryStage);
         });
+        // Create instances of the inner classes
+        EditProfileUI editProfileUI = new EditProfileUI();
+        AddPostUI addPostUI = new AddPostUI();
+        RetrievePostUI retrievePostUI = new RetrievePostUI();
+        RemovePostUI removePostUI = new RemovePostUI();
+        TopPostsUI topPostsUI = new TopPostsUI();
+        ExportPostUI exportPostUI = new ExportPostUI();
 
         editProfileButton.setOnAction(event -> {
-            // Open a new window for editing the user's profile
-            EditProfileUI.displayEditProfileUI(primaryStage, currentUser);
+            // Call the non-static method on the instance
+            editProfileUI.displayEditProfileUI(primaryStage, currentUser);
         });
 
         addPostButton.setOnAction(event -> {
-            AddPostUI.displayAddPostUI(primaryStage, currentUser);
+            // Call the non-static method on the instance
+            addPostUI.displayAddPostUI(primaryStage, currentUser);
         });
 
         retrievePostButton.setOnAction(event -> {
-            RetrievePostUI.displayRetrievePostUI(primaryStage, currentUser);
+            // Call the non-static method on the instance
+            retrievePostUI.displayRetrievePostUI(primaryStage, currentUser);
         });
 
         removePostButton.setOnAction(event -> {
-            RemovePostUI.displayRemovePostUI(primaryStage, currentUser);
+            // Call the non-static method on the instance
+            removePostUI.displayRemovePostUI(primaryStage, currentUser);
         });
 
         topPostsButton.setOnAction(event -> {
-            TopPostsUI.displayTopPostsUI(primaryStage, currentUser);
+            // Call the non-static method on the instance
+            topPostsUI.displayTopPostsUI(primaryStage, currentUser);
         });
 
         exportPostButton.setOnAction(event -> {
-            ExportPostUI.displayExportPostUI(primaryStage, currentUser);
+            // Call the non-static method on the instance
+            exportPostUI.displayExportPostUI(primaryStage, currentUser);
         });
 
         primaryStage.show();
     }
 
-    public static void displayCombinedDashboard(Stage primaryStage, User user) {
-        currentUser = user;
-        launch(primaryStage);
+
+    public static void displayUserDashboard(Stage primaryStage, User user) {
+        CombinedDashboard dashboard = new CombinedDashboard();
+        CombinedDashboard.currentUser = user;
+        dashboard.start(primaryStage); // Start the dashboard
     }
 
-    class LoginUI {
-        public static void displayLoginUI(Stage primaryStage) {
-            // Implement the login UI as needed
-        }
-    }
+
+    
 
     class EditProfileUI {
-        public static void displayEditProfileUI(Stage primaryStage, User user) {
+        public  void displayEditProfileUI(Stage primaryStage, User user) {
             // Create the edit profile window components
             TextField firstNameField = new TextField(user.getFirstName());
-            TextField lastNameField = a TextField(user.getLastName());
+            TextField lastNameField = new TextField(user.getLastName());
             TextField usernameField = new TextField(user.getUsername());
             TextField passwordField = new TextField(user.getPassword());
             Button saveButton = new Button("Save");
@@ -140,7 +154,7 @@ public class CombinedDashboard extends Application {
     }
 
     class AddPostUI {
-        public static void displayAddPostUI(Stage primaryStage, User user) {
+        public  void displayAddPostUI(Stage primaryStage, User user) {
             // Create the add post window components
             TextArea contentTextArea = new TextArea();
             contentTextArea.setWrapText(true);
@@ -182,7 +196,7 @@ public class CombinedDashboard extends Application {
     }
 
     class RetrievePostUI {
-        public static void displayRetrievePostUI(Stage primaryStage, User user) {
+        public  void displayRetrievePostUI(Stage primaryStage, User user) {
             // Create the retrieve post window components
             TextField postIdField = new TextField();
             Button retrieveButton = new Button("Retrieve");
@@ -215,7 +229,7 @@ public class CombinedDashboard extends Application {
     }
 
     class RemovePostUI {
-        public static void displayRemovePostUI(Stage primaryStage, User user) {
+        public  void displayRemovePostUI(Stage primaryStage, User user) {
             // Create the remove post window components
             TextField postIdField = new TextField();
             Button removeButton = new Button("Remove");
@@ -245,7 +259,7 @@ public class CombinedDashboard extends Application {
     }
 
     class TopPostsUI {
-        public static void displayTopPostsUI(Stage primaryStage, User user) {
+        public  void displayTopPostsUI(Stage primaryStage, User user) {
             // Create the top posts window components
             TextField topNField = new TextField("10"); // Default to top 10
             Button showTopPostsButton = new Button("Show Top Posts");
@@ -278,7 +292,7 @@ public class CombinedDashboard extends Application {
     }
 
     class ExportPostUI {
-        public static void displayExportPostUI(Stage primaryStage, User user) {
+        public  void displayExportPostUI(Stage primaryStage, User user) {
             // Create the export post window components
             TextField postIdField = new TextField();
             Button exportButton = new Button("Export");
@@ -286,7 +300,7 @@ public class CombinedDashboard extends Application {
             Button selectFolderButton = new Button("Select Folder");
             Label fileNameLabel = new Label("Enter a file name:");
             TextField fileNameField = new TextField();
-            Label exportStatusLabel = new Label("");
+            Label exportStatusLabel = new Label();
 
             // Layout
             VBox layout = new VBox(10);
@@ -310,21 +324,25 @@ public class CombinedDashboard extends Application {
             exportButton.setOnAction(event -> {
                 // Export the post by ID to a CSV file
                 int postId = Integer.parseInt(postIdField.getText());
-                String folderPath = ""; // Get the selected folder path
                 String fileName = fileNameField.getText();
 
-                // You can call a method to export the post to a CSV file here
-                // For example, PostManagement.exportPostToCSV(user, postId, folderPath, fileName);
+                // Check if folderPath is not null or empty
+                if (folderPath == null || folderPath.isEmpty()) {
+                    exportStatusLabel.setText("Please select a folder for export.");
+                } else {
+                    // You can call a method to export the post to a CSV file here
+                    // For example, PostManagement.exportPostToCSV(user, postId, folderPath, fileName);
 
-                // Display export status
-                exportStatusLabel.setText("Post exported to CSV successfully.");
+                    // Display export status
+                    exportStatusLabel.setText("Post exported to CSV successfully.");
 
-                // Close the export post window after a delay (e.g., 2 seconds)
-                PauseTransition delay = new PauseTransition(Duration.seconds(2));
-                delay.setOnFinished(closeEvent -> {
-                    primaryStage.close();
-                });
-                delay.play();
+                    // Close the export post window after a delay (e.g., 2 seconds)
+                    PauseTransition delay = new PauseTransition(Duration.seconds(2));
+                    delay.setOnFinished(closeEvent -> {
+                        primaryStage.close();
+                    });
+                    delay.play();
+                }
             });
 
             // Event handler for the select folder button
@@ -342,3 +360,4 @@ public class CombinedDashboard extends Application {
         }
     }
 }
+

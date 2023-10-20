@@ -6,10 +6,10 @@ import javafx.stage.Stage;
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Start the application with the login screen
-        LoginUI.displayLoginUI(primaryStage);
+        // Create an instance of LoginUI and then call the non-static method
+        LoginUI loginUI = new LoginUI();
+        loginUI.displayLoginUI(primaryStage);
     }
-    
 
     public static void main(String[] args) {
         // Register the MySQL JDBC driver
@@ -21,12 +21,4 @@ public class Main extends Application {
 
         launch(args);
     }
-
-   
 }
-
-
-
-
-
-

@@ -11,10 +11,10 @@ public class UserAuthentication {
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "Zishan@2320";
 
-    public static boolean login(String username, String password) {
+    public static boolean login(User user, String password) {
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE username = ? AND password = ?")) {
-            stmt.setString(1, username);
+            stmt.setString(1, user.getUsername()); // Use the username from the User object
             stmt.setString(2, password);
 
             try (ResultSet result = stmt.executeQuery()) {
@@ -25,7 +25,4 @@ public class UserAuthentication {
             return false; // Return false for any errors
         }
     }
-
-
-
 }

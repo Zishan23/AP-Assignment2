@@ -9,7 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 class LoginUI {
-    public static void displayLoginUI(Stage primaryStage) {
+    public void displayLoginUI(Stage primaryStage) {
         // Create the login form
         TextField usernameField = new TextField();
         PasswordField passwordField = new PasswordField();
@@ -28,13 +28,14 @@ class LoginUI {
 
         // Event handler for the login button
         loginButton.setOnAction(event -> {
-            User username = usernameField.getText();
+            String username = usernameField.getText();
             String password = passwordField.getText();
 
-            boolean loginSuccessful = UserAuthentication.login(username, password);
+            // First, retrieve the User object based on the username
+            User user = UserManagement.getUserByUsername(username);
 
-            if (loginSuccessful) {
-                UserDashboard.displayUserDashboard(primaryStage, username);
+            if (user != null && UserAuthentication.login(user, password)) {
+                CombinedDashboard.displayUserDashboard(primaryStage, user);
             } else {
                 errorLabel.setText("Login failed. Please try again.");
             }
