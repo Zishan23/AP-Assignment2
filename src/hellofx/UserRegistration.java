@@ -105,31 +105,56 @@ public class UserRegistration {
         String selectUserIdSql = "SELECT UserID FROM Users WHERE username = ?";
         String updateUserProfileSql = "UPDATE Users SET first_name = ?, last_name = ?, username = ?, password = ? WHERE UserID = ?";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-             PreparedStatement selectStatement = conn.prepareStatement(selectUserIdSql);
-             PreparedStatement updateStatement = conn.prepareStatement(updateUserProfileSql)) {
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+            conn.setAutoCommit(false); // Disable auto-commit for transaction management
 
             // First, retrieve the UserID based on the username
-            selectStatement.setString(1, username);
-            try (ResultSet resultSet = selectStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    int userId = resultSet.getInt("UserID");
+            try (PreparedStatement selectStatement = conn.prepareStatement(selectUserIdSql);
+                 PreparedStatement updateStatement = conn.prepareStatement(updateUserProfileSql)) {
+                selectStatement.setString(1, username);
+                try (ResultSet resultSet = selectStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        int userId = resultSet.getInt("UserID");
 
-                    // Now, update the user's profile using the retrieved UserID
-                    updateStatement.setString(1, newFirstName);
-                    updateStatement.setString(2, newLastName);
-                    updateStatement.setString(3, newUsername);
-                    updateStatement.setString(4, newPassword);
-                    updateStatement.setInt(5, userId);
+                        // Now, update the user's profile using the retrieved UserID
+                        updateStatement.setString(1, newFirstName);
+                        updateStatement.setString(2, newLastName);
+                        updateStatement.setString(3, newUsername);
+                        updateStatement.setString(4, newPassword);
+                        updateStatement.setInt(5, userId);
 
-                    int rowsUpdated = updateStatement.executeUpdate();
-                    return rowsUpdated > 0;
+                        int rowsUpdated = updateStatement.executeUpdate();
+                        conn.commit(); // Commit the transaction
+
+                        return rowsUpdated > 0;
+                    }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
+    }
+    public static List<Post> getTopPostsByLikesAndShares(int topN) {
+        String selectTopPostsSql = "SELECT * FROM Posts ORDER BY Likes DESC, Shares DESC LIMIT ?";
+        List<Post> topPosts = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement statement = conn.prepareStatement(selectTopPostsSql)) {
+            statement.setInt(1, topN);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    int postId = resultSet.getInt("PostID");
+                    int userId = resultSet.getInt("UserID");
+                    String content = resultSet.getString("Content");
+                    int likes = resultSet.getInt("Likes");
+                    int shares = resultSet.getInt("Shares");
+                    topPosts.add(new Post(postId, userId, content, likes, shares));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return topPosts;
     }
 
 }

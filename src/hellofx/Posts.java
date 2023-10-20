@@ -26,7 +26,7 @@ public class Posts {
 
 class Post {
     private int postId;
-   
+    private int userId;
     private String content;
     private int likes;
     private int shares;
@@ -43,7 +43,9 @@ class Post {
     public int getPostId() {
         return postId;
     }
-
+    public int getUserId() {
+        return userId;
+    }
     public String getContent() {
         return content;
     }

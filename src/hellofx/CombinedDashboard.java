@@ -11,6 +11,11 @@ import java.io.File;
 import javafx.animation.PauseTransition;
 import javafx.scene.control.Label;
 
+import java.util.List;
+
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+
 public class CombinedDashboard extends Application {
     private static User currentUser; // Assuming you have a User class
     private String folderPath;
@@ -182,8 +187,8 @@ public class CombinedDashboard extends Application {
         }
     }
 
-    class AddPostUI {
-        public  void displayAddPostUI(Stage primaryStage, User user) {
+    public class AddPostUI {
+        public void displayAddPostUI(Stage primaryStage, User user) {
             // Create the add post window components
             TextArea contentTextArea = new TextArea();
             contentTextArea.setWrapText(true);
@@ -210,22 +215,66 @@ public class CombinedDashboard extends Application {
 
             // Event handler for the save button
             saveButton.setOnAction(event -> {
-                // Get the post details
+                // Get the post details from the input fields
                 String content = contentTextArea.getText();
                 int likes = Integer.parseInt(likesField.getText());
                 int shares = Integer.parseInt(sharesField.getText());
 
-                // You can call a method to add the post to the database here
-                // For example, PostManagement.addPost(user, content, likes, shares);
+                // Call the addPost method to save the post in the database
+                boolean postAdded = UserRegistration.addPost(user.getUserId(), content, likes, shares);
+
+                if (postAdded) {
+                    // Post added successfully
+                    // You can display a success message or perform any other actions here
+
+                    // For example, you can clear the input fields and display a success message
+                    contentTextArea.clear();
+                    likesField.clear();
+                    sharesField.clear();
+
+                    // Display a success message
+                    displaySuccessMessage("Post added successfully");
+                } else {
+                    // Post addition failed, display an error message
+                    // You can set an error label or show a dialog to inform the user
+
+                    // For example, you can display an error message in a label
+                    displayErrorMessage("Post addition failed. Please try again.");
+                }
 
                 // Close the add post window
                 primaryStage.close();
             });
         }
+
+        // Helper method to display a success message
+        private void displaySuccessMessage(String message) {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Success");
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
+        }
+
+        // Helper method to display an error message
+        private void displayErrorMessage(String message) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
+        }
     }
 
+
+
     class RetrievePostUI {
-        public  void displayRetrievePostUI(Stage primaryStage, User user) {
+    	private Posts posts; // Your list of posts
+
+        public void setPosts(Posts posts) {
+            this.posts = posts;
+        }
+        public void displayRetrievePostUI(Stage primaryStage, User user) {
             // Create the retrieve post window components
             TextField postIdField = new TextField();
             Button retrieveButton = new Button("Retrieve");
@@ -249,16 +298,45 @@ public class CombinedDashboard extends Application {
             // Event handler for the retrieve button
             retrieveButton.setOnAction(event -> {
                 // Retrieve the post by ID and display the details
-                int postId = Integer.parseInt(postIdField.getText());
+                int postId;
+                try {
+                    postId = Integer.parseInt(postIdField.getText());
+                } catch (NumberFormatException e) {
+                    // Handle invalid input (you can add your custom handling logic here)
+                    return;
+                }
 
-                // You can call a method to retrieve and display the post details from the database here
-                // For example, PostManagement.retrievePost(user, postId, postDetailsTextArea);
+                // Call a method to retrieve and display the post details
+                retrievePost(postId, postDetailsTextArea);
             });
+        }
+
+        // Method to retrieve and display post details
+        private void retrievePost(int postId, TextArea postDetailsTextArea) {
+            // Search for the post with the given postId in the list of posts
+            for (Post post : posts.getPosts()) {
+                if (post.getPostId() == postId) {
+                    // Display post details in the text area
+                    postDetailsTextArea.setText("Post ID: " + post.getPostId() + "\n"
+                            + "Content: " + post.getContent() + "\n"
+                            + "Likes: " + post.getLikes() + "\n"
+                            + "Shares: " + post.getShares());
+                    return;
+                }
+            }
+
+            // Handle the case where the post is not found (you can add your custom logic)
         }
     }
 
+
+       
+
+        
+    
+    
     class RemovePostUI {
-        public  void displayRemovePostUI(Stage primaryStage, User user) {
+        public void displayRemovePostUI(Stage primaryStage, User user) {
             // Create the remove post window components
             TextField postIdField = new TextField();
             Button removeButton = new Button("Remove");
@@ -281,14 +359,48 @@ public class CombinedDashboard extends Application {
                 // Remove the post by ID
                 int postId = Integer.parseInt(postIdField.getText());
 
-                // You can call a method to remove the post from the database here
-                // For example, PostManagement.removePost(user, postId);
+                // Call the removePost method to remove the post from the database
+                boolean postRemoved = UserRegistration.deletePost(postId);
+
+                if (postRemoved) {
+                    // Post removed successfully
+                    // You can display a success message or perform any other actions here
+
+                    // For example, you can clear the input field and display a success message
+                    postIdField.clear();
+                    displaySuccessMessage("Post removed successfully");
+                } else {
+                    // Post removal failed, display an error message
+                    // You can set an error label or show a dialog to inform the user
+
+                    // For example, you can display an error message in a label
+                    displayErrorMessage("Post removal failed. Please try again.");
+                }
             });
+        }
+
+        // Helper method to display a success message
+        private void displaySuccessMessage(String message) {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Success");
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
+        }
+
+        // Helper method to display an error message
+        private void displayErrorMessage(String message) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
         }
     }
 
+
     class TopPostsUI {
-        public  void displayTopPostsUI(Stage primaryStage, User user) {
+        public void displayTopPostsUI(Stage primaryStage, User user) {
             // Create the top posts window components
             TextField topNField = new TextField("10"); // Default to top 10
             Button showTopPostsButton = new Button("Show Top Posts");
@@ -314,11 +426,28 @@ public class CombinedDashboard extends Application {
                 // Get the value of N (number of top posts to display)
                 int topN = Integer.parseInt(topNField.getText());
 
-                // You can call a method to retrieve and display the top N posts from the database here
-                // For example, PostManagement.showTopPosts(user, topN, topPostsTextArea);
+                // Call the getTopPostsByLikesAndShares method to retrieve and display the top N posts
+                List<Post> topPosts = UserRegistration.getTopPostsByLikesAndShares(topN);
+
+                // Format the retrieved top posts as a String
+                StringBuilder topPostsString = new StringBuilder();
+                for (Post post : topPosts) {
+                    topPostsString.append("Post ID: ").append(post.getPostId()).append("\n");
+                    topPostsString.append("User ID: ").append(post.getUserId()).append("\n");
+                    topPostsString.append("Content: ").append(post.getContent()).append("\n");
+                    topPostsString.append("Likes: ").append(post.getLikes()).append("\n");
+                    topPostsString.append("Shares: ").append(post.getShares()).append("\n");
+                    topPostsString.append("\n");
+                }
+
+                // Display the retrieved top posts in the TextArea
+                topPostsTextArea.setText(topPostsString.toString());
             });
         }
     }
+
+
+
 
     class ExportPostUI {
         public  void displayExportPostUI(Stage primaryStage, User user) {
