@@ -9,7 +9,7 @@ import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import java.io.File;
 import javafx.animation.PauseTransition;
-
+import javafx.scene.control.Label;
 
 public class CombinedDashboard extends Application {
     private static User currentUser; // Assuming you have a User class
@@ -109,13 +109,14 @@ public class CombinedDashboard extends Application {
     
 
     class EditProfileUI {
-        public  void displayEditProfileUI(Stage primaryStage, User user) {
+        public void displayEditProfileUI(Stage primaryStage, User user) {
             // Create the edit profile window components
             TextField firstNameField = new TextField(user.getFirstName());
             TextField lastNameField = new TextField(user.getLastName());
             TextField usernameField = new TextField(user.getUsername());
-            TextField passwordField = new TextField(user.getPassword());
+            PasswordField passwordField = new PasswordField();
             Button saveButton = new Button("Save");
+            Label errorLabel = new Label("");
 
             // Layout
             VBox layout = new VBox(10);
@@ -129,7 +130,8 @@ public class CombinedDashboard extends Application {
                 usernameField,
                 new Label("Password:"),
                 passwordField,
-                saveButton
+                saveButton,
+                errorLabel
             );
 
             // Set up the scene
@@ -138,18 +140,45 @@ public class CombinedDashboard extends Application {
 
             // Event handler for the save button
             saveButton.setOnAction(event -> {
-                // Update the user's profile information in the database
+                // Get the new profile information from the input fields
                 String newFirstName = firstNameField.getText();
                 String newLastName = lastNameField.getText();
                 String newUsername = usernameField.getText();
                 String newPassword = passwordField.getText();
 
-                // You can call a method to update the user's profile in the database here
-                // For example, UserRegistration.updateUserProfile(user, newFirstName, newLastName, newUsername, newPassword);
+                // Check if the new profile information is valid
+                if (isValidInput(newFirstName, newLastName, newUsername, newPassword)) {
+                    // Update the user's profile information in the database
+                    boolean updateSuccessful = UserRegistration.updateUserProfile(user.getUsername(), newFirstName, newLastName, newUsername, newPassword);
 
-                // Close the edit profile window
-                primaryStage.close();
+                    if (updateSuccessful) {
+                        // Profile update was successful
+                        // Update the currentUser object with the new information
+                        user.setFirstName(newFirstName);
+                        user.setLastName(newLastName);
+                        user.setUsername(newUsername);
+                        user.setPassword(newPassword);
+
+                        // Close the edit profile window
+                        primaryStage.close();
+                    } else {
+                        // Profile update failed, display an error message
+                        errorLabel.setText("Profile update failed. Please try again.");
+                    }
+                } else {
+                    // Invalid input, display an error message
+                    errorLabel.setText("Invalid input. Please check your data.");
+                }
             });
+
+            primaryStage.show();
+        }
+    
+
+        // Method to validate input
+        private boolean isValidInput(String newFirstName, String newLastName, String newUsername, String newPassword) {
+            // Add validation logic here (e.g., checking for empty fields, valid username, strong password, etc.)
+            return !newFirstName.isEmpty() && !newLastName.isEmpty() && !newUsername.isEmpty() && !newPassword.isEmpty();
         }
     }
 

@@ -31,15 +31,16 @@ class LoginUI {
             String username = usernameField.getText();
             String password = passwordField.getText();
 
-            // First, retrieve the User object based on the username
-            User user = UserManagement.getUserByUsername(username);
+            // Authenticate the user with the provided username and password
+            User authenticatedUser = UserRegistration.loginUser(username, password);
 
-            if (user != null && UserAuthentication.login(user, password)) {
-                CombinedDashboard.displayUserDashboard(primaryStage, user);
+            if (authenticatedUser != null) {
+                CombinedDashboard.displayUserDashboard(primaryStage, authenticatedUser);
             } else {
                 errorLabel.setText("Login failed. Please try again.");
             }
         });
+
 
         // Event handler for the register button
         registerButton.setOnAction(event -> {

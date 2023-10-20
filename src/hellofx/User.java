@@ -2,7 +2,7 @@ package hellofx;
 import java.util.ArrayList;
 import java.util.List;
 
-class User {
+class  User {
     private int userId;
     private String firstName;
     private String lastName;

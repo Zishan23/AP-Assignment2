@@ -15,7 +15,7 @@ public class UserRegistration {
 
     // User Registration
     public static boolean registerUser(String firstName, String lastName, String username, String password) {
-    	String insertUserSql = "INSERT INTO Users (first_name, last_name, username, password) VALUES (?, ?, ?, ?)";
+    	String insertUserSql = "INSERT INTO users (first_name, last_name, username, password) VALUES (?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              PreparedStatement statement = conn.prepareStatement(insertUserSql)) {
             statement.setString(1, firstName);
@@ -32,7 +32,7 @@ public class UserRegistration {
 
     // User Login
     public static User loginUser(String username, String password) {
-    	String selectUserSql = "SELECT * FROM Users WHERE username = ? AND password = ?";
+    	String selectUserSql = "SELECT * FROM users WHERE username = ? AND password = ?";
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              PreparedStatement statement = conn.prepareStatement(selectUserSql)) {
             statement.setString(1, username);
@@ -40,8 +40,8 @@ public class UserRegistration {
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     int userId = resultSet.getInt("UserID");
-                    String firstName = resultSet.getString("FirstName");
-                    String lastName = resultSet.getString("LastName");
+                    String firstName = resultSet.getString("first_name");
+                    String lastName = resultSet.getString("last_name");
                     return new User(userId, firstName, lastName, username, password);
                 }
             }
@@ -101,4 +101,35 @@ public class UserRegistration {
             return false;
         }
     }
+    public static boolean updateUserProfile(String username, String newFirstName, String newLastName, String newUsername, String newPassword) {
+        String selectUserIdSql = "SELECT UserID FROM Users WHERE username = ?";
+        String updateUserProfileSql = "UPDATE Users SET first_name = ?, last_name = ?, username = ?, password = ? WHERE UserID = ?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement selectStatement = conn.prepareStatement(selectUserIdSql);
+             PreparedStatement updateStatement = conn.prepareStatement(updateUserProfileSql)) {
+
+            // First, retrieve the UserID based on the username
+            selectStatement.setString(1, username);
+            try (ResultSet resultSet = selectStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    int userId = resultSet.getInt("UserID");
+
+                    // Now, update the user's profile using the retrieved UserID
+                    updateStatement.setString(1, newFirstName);
+                    updateStatement.setString(2, newLastName);
+                    updateStatement.setString(3, newUsername);
+                    updateStatement.setString(4, newPassword);
+                    updateStatement.setInt(5, userId);
+
+                    int rowsUpdated = updateStatement.executeUpdate();
+                    return rowsUpdated > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 }

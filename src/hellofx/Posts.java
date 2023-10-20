@@ -26,14 +26,14 @@ public class Posts {
 
 class Post {
     private int postId;
-    private int userId;
+   
     private String content;
     private int likes;
     private int shares;
 
     public Post(int postId, int userId, String content, int likes, int shares) {
         this.postId = postId;
-        this.userId = userId;
+      
         this.content = content;
         this.likes = likes;
         this.shares = shares;
