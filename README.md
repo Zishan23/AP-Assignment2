@@ -21,13 +21,13 @@ Before running the application, make sure you have the following installed:
 •	Java Development Kit (JDK)
 •	JavaFX SDK
 •	MySQL Database Server
-How to Run
+How to Run💻
 1.	Clone this repository to your local machine.
 bashCopy code
 git clone https://github.com/Zishan23/AP-Assignment2.git
 2.	Make sure your MySQL database server is running.
-3.	Import the database.sql file into your MySQL database to create the necessary tables.
-4.	Open the project in your favorite Java IDE (Eclipse, IntelliJ IDEA, etc.).
+3.	Import the JDBC.sql file into your MySQL database to create the necessary tables.
+4.	Open the project in your favorite Java IDE (Eclipse).
 5.	Set up the database connection by modifying the DB_URL, DB_USER, and DB_PASSWORD fields in the UserRegistration class. Adjust the database connection details to match your MySQL configuration.
 6.	Run the CombinedDashboard class to start the application.
 7.	You will be presented with the login screen. You can create a new user account or log in using an existing account.
